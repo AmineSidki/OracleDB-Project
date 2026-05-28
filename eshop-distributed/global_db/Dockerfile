@@ -5,6 +5,6 @@ ENV ORACLE_CHARACTERSET=AL32UTF8
 ENV APP_USER=eshop
 ENV APP_USER_PASSWORD=eshop123
 
-COPY init/ /container-entrypoint-initdb.d/
+COPY init/ /opt/oracle/scripts/setup/
 
 EXPOSE 1521 5500
