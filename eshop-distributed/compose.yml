@@ -12,6 +12,7 @@ services:
       - "5500:5500"
     volumes:
       - global_db_data:/opt/oracle/oradata
+      - ./global_db/init:/container-entrypoint-initdb.d
     networks:
       - eshop_net
     healthcheck:
