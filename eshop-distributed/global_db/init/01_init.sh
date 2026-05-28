@@ -1,10 +1,5 @@
 #!/bin/bash
 
-echo "Waiting for XEPDB1 to be ready..."
-until echo "SELECT 1 FROM DUAL;" | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q "1"; do
-  sleep 10
-done
-
 echo "Creating eshop user..."
 sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba << 'SQLEOF'
 CREATE USER eshop IDENTIFIED BY eshop123 DEFAULT TABLESPACE USERS QUOTA UNLIMITED ON USERS;
@@ -12,12 +7,14 @@ GRANT CONNECT, RESOURCE TO eshop;
 EXIT;
 SQLEOF
 
-echo "Creating tables..."
+echo "Creating tables as eshop..."
 sqlplus -s eshop/eshop123@localhost:1521/XEPDB1 << 'SQLEOF'
+
 CREATE TABLE Categories (
     idcateg     NUMBER          PRIMARY KEY,
     nomcateg    VARCHAR2(100)   NOT NULL
 );
+
 CREATE TABLE Produits (
     idproduit       NUMBER          PRIMARY KEY,
     idcateg         NUMBER          NOT NULL,
@@ -25,6 +22,7 @@ CREATE TABLE Produits (
     prixunitaire    NUMBER(10,2)    NOT NULL,
     CONSTRAINT fk_produits_categ FOREIGN KEY (idcateg) REFERENCES Categories(idcateg)
 );
+
 CREATE TABLE Clients (
     idclient    NUMBER          PRIMARY KEY,
     codeclient  VARCHAR2(20)    NOT NULL,
@@ -34,12 +32,14 @@ CREATE TABLE Clients (
     ville       VARCHAR2(100),
     pays        VARCHAR2(100)
 );
+
 CREATE TABLE Employes (
     idemploye   NUMBER          PRIMARY KEY,
     nom         VARCHAR2(100)   NOT NULL,
     prenom      VARCHAR2(100)   NOT NULL,
     fonction    VARCHAR2(100)
 );
+
 CREATE TABLE Commandes (
     idcommande      NUMBER      PRIMARY KEY,
     idclient        NUMBER      NOT NULL,
@@ -48,6 +48,7 @@ CREATE TABLE Commandes (
     CONSTRAINT fk_commandes_client  FOREIGN KEY (idclient)  REFERENCES Clients(idclient),
     CONSTRAINT fk_commandes_employe FOREIGN KEY (idemploye) REFERENCES Employes(idemploye)
 );
+
 CREATE TABLE LigneCommandes (
     idlignecommande NUMBER      PRIMARY KEY,
     idcommande      NUMBER      NOT NULL,
@@ -57,6 +58,7 @@ CREATE TABLE LigneCommandes (
     CONSTRAINT fk_lc_commande FOREIGN KEY (idcommande) REFERENCES Commandes(idcommande),
     CONSTRAINT fk_lc_produit  FOREIGN KEY (idproduit)  REFERENCES Produits(idproduit)
 );
+
 EXIT;
 SQLEOF
 
