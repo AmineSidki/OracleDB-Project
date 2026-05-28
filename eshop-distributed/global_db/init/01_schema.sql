@@ -1,21 +1,7 @@
 -- ============================================================
 -- EShop Global Schema
--- Runs inside the XEPDB1 pluggable database as SYSTEM
+-- Executed in XEPDB1 as the eshop user (via APP_USER env var)
 -- ============================================================
-
-ALTER SESSION SET CONTAINER = XEPDB1;
-
-CREATE USER eshop IDENTIFIED BY eshop123
-  DEFAULT TABLESPACE USERS
-  QUOTA UNLIMITED ON USERS;
-
-GRANT CONNECT, RESOURCE TO eshop;
-
-ALTER SESSION SET CURRENT_SCHEMA = eshop;
-
--- ------------------------------------------------------------
--- Tables
--- ------------------------------------------------------------
 
 CREATE TABLE Categories (
     idcateg     NUMBER          PRIMARY KEY,
@@ -49,20 +35,20 @@ CREATE TABLE Employes (
 );
 
 CREATE TABLE Commandes (
-    idcommande  NUMBER          PRIMARY KEY,
-    idclient    NUMBER          NOT NULL,
-    idemploye   NUMBER,
-    datecommande DATE           DEFAULT SYSDATE,
-    CONSTRAINT fk_commandes_client   FOREIGN KEY (idclient)  REFERENCES Clients(idclient),
-    CONSTRAINT fk_commandes_employe  FOREIGN KEY (idemploye) REFERENCES Employes(idemploye)
+    idcommande      NUMBER      PRIMARY KEY,
+    idclient        NUMBER      NOT NULL,
+    idemploye       NUMBER,
+    datecommande    DATE        DEFAULT SYSDATE,
+    CONSTRAINT fk_commandes_client  FOREIGN KEY (idclient)  REFERENCES Clients(idclient),
+    CONSTRAINT fk_commandes_employe FOREIGN KEY (idemploye) REFERENCES Employes(idemploye)
 );
 
 CREATE TABLE LigneCommandes (
-    idlignecommande NUMBER       PRIMARY KEY,
-    idcommande      NUMBER       NOT NULL,
-    idproduit       NUMBER       NOT NULL,
-    quantite        NUMBER       NOT NULL,
-    remise          NUMBER(5,2)  DEFAULT 0,
+    idlignecommande NUMBER      PRIMARY KEY,
+    idcommande      NUMBER      NOT NULL,
+    idproduit       NUMBER      NOT NULL,
+    quantite        NUMBER      NOT NULL,
+    remise          NUMBER(5,2) DEFAULT 0,
     CONSTRAINT fk_lc_commande FOREIGN KEY (idcommande) REFERENCES Commandes(idcommande),
     CONSTRAINT fk_lc_produit  FOREIGN KEY (idproduit)  REFERENCES Produits(idproduit)
 );

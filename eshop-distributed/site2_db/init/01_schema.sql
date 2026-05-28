@@ -1,21 +1,8 @@
 -- ============================================================
 -- Site2 Fragment Schema
 -- Scenario 1 fragment: idcateg=35 AND quantite>50
+-- Executed in XEPDB1 as the site2 user (via APP_USER env var)
 -- ============================================================
-
-ALTER SESSION SET CONTAINER = XEPDB1;
-
-CREATE USER site2 IDENTIFIED BY site2123
-  DEFAULT TABLESPACE USERS
-  QUOTA UNLIMITED ON USERS;
-
-GRANT CONNECT, RESOURCE TO site2;
-
-ALTER SESSION SET CURRENT_SCHEMA = site2;
-
--- ------------------------------------------------------------
--- Fragment tables (mirror structure of global EShop schema)
--- ------------------------------------------------------------
 
 CREATE TABLE Categories2 (
     idcateg     NUMBER          PRIMARY KEY,
@@ -49,20 +36,20 @@ CREATE TABLE Employes2 (
 );
 
 CREATE TABLE Commandes2 (
-    idcommande  NUMBER          PRIMARY KEY,
-    idclient    NUMBER          NOT NULL,
-    idemploye   NUMBER,
-    datecommande DATE           DEFAULT SYSDATE,
+    idcommande      NUMBER      PRIMARY KEY,
+    idclient        NUMBER      NOT NULL,
+    idemploye       NUMBER,
+    datecommande    DATE        DEFAULT SYSDATE,
     CONSTRAINT fk_cmd2_client  FOREIGN KEY (idclient)  REFERENCES Clients2(idclient),
     CONSTRAINT fk_cmd2_employe FOREIGN KEY (idemploye) REFERENCES Employes2(idemploye)
 );
 
 CREATE TABLE LigneCommandes2 (
-    idlignecommande NUMBER       PRIMARY KEY,
-    idcommande      NUMBER       NOT NULL,
-    idproduit       NUMBER       NOT NULL,
-    quantite        NUMBER       NOT NULL,
-    remise          NUMBER(5,2)  DEFAULT 0,
+    idlignecommande NUMBER      PRIMARY KEY,
+    idcommande      NUMBER      NOT NULL,
+    idproduit       NUMBER      NOT NULL,
+    quantite        NUMBER      NOT NULL,
+    remise          NUMBER(5,2) DEFAULT 0,
     CONSTRAINT fk_lc2_commande FOREIGN KEY (idcommande) REFERENCES Commandes2(idcommande) ON DELETE CASCADE,
     CONSTRAINT fk_lc2_produit  FOREIGN KEY (idproduit)  REFERENCES Produits2(idproduit)   ON DELETE CASCADE
 );
