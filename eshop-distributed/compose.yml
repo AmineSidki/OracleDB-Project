@@ -1,0 +1,85 @@
+services:
+
+  global_db:
+    build:
+      context: ./global_db
+    container_name: eshop_global_db
+    environment:
+      ORACLE_PWD: oracle123
+      ORACLE_CHARACTERSET: AL32UTF8
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    networks:
+      - eshop_net
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  site1_db:
+    build:
+      context: ./site1_db
+    container_name: eshop_site1_db
+    environment:
+      ORACLE_PWD: oracle123
+      ORACLE_CHARACTERSET: AL32UTF8
+    ports:
+      - "1522:1521"
+      - "5501:5500"
+    networks:
+      - eshop_net
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  site2_db:
+    build:
+      context: ./site2_db
+    container_name: eshop_site2_db
+    environment:
+      ORACLE_PWD: oracle123
+      ORACLE_CHARACTERSET: AL32UTF8
+    ports:
+      - "1523:1521"
+      - "5502:5500"
+    networks:
+      - eshop_net
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
+  db_init:
+    image: container-registry.oracle.com/database/express:21.3.0-xe
+    container_name: eshop_db_init
+    depends_on:
+      global_db:
+        condition: service_healthy
+      site1_db:
+        condition: service_healthy
+      site2_db:
+        condition: service_healthy
+    networks:
+      - eshop_net
+    volumes:
+      - ./global_db/init:/init/global:ro
+      - ./site1_db/init:/init/site1:ro
+      - ./site2_db/init:/init/site2:ro
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        sqlplus -s sys/oracle123@global_db:1521/XEPDB1 as sysdba @/init/global/01_schema.sql &&
+        sqlplus -s sys/oracle123@site1_db:1521/XEPDB1 as sysdba @/init/site1/01_schema.sql &&
+        sqlplus -s sys/oracle123@site2_db:1521/XEPDB1 as sysdba @/init/site2/01_schema.sql
+
+networks:
+  eshop_net:
+    driver: bridge
