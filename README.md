@@ -42,9 +42,8 @@ Les scripts d'initialisation présents dans le dossier `init/` de chaque contene
 ## Connexion via SQL Developer
 
 Une fois les trois conteneurs démarrés, créer trois connexions dans SQL Developer avec les paramètres suivants :
-
 | Connexion | Utilisateur | Mot de passe | Hôte | Port | Nom du service |
-|||||||
+|---|---|---|---|---|---|
 | global_db | eshop | eshop123 | localhost | 1521 | FREEPDB1 |
 | site1_db | site1 | site1123 | localhost | 1522 | FREEPDB1 |
 | site2_db | site2 | site2123 | localhost | 1523 | FREEPDB1 |
