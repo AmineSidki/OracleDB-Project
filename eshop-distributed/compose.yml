@@ -5,15 +5,18 @@ services:
       context: ./global_db
     container_name: eshop_global_db
     environment:
-      ORACLE_PWD: oracle123
+      ORACLE_PASSWORD: oracle123
       ORACLE_CHARACTERSET: AL32UTF8
     ports:
       - "1521:1521"
       - "5500:5500"
+    volumes:
+      - ./global_db/init:/container-entrypoint-initdb.d
+      - global_oradata:/opt/oracle/oradata   # Persistent storage
     networks:
       - eshop_net
     healthcheck:
-      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q 1"]
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
       interval: 30s
       timeout: 10s
       retries: 20
@@ -24,15 +27,18 @@ services:
       context: ./site1_db
     container_name: eshop_site1_db
     environment:
-      ORACLE_PWD: oracle123
+      ORACLE_PASSWORD: oracle123
       ORACLE_CHARACTERSET: AL32UTF8
     ports:
       - "1522:1521"
       - "5501:5500"
+    volumes:
+      - ./site1_db/init:/container-entrypoint-initdb.d
+      - site1_oradata:/opt/oracle/oradata    # Persistent storage
     networks:
       - eshop_net
     healthcheck:
-      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q 1"]
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
       interval: 30s
       timeout: 10s
       retries: 20
@@ -43,15 +49,18 @@ services:
       context: ./site2_db
     container_name: eshop_site2_db
     environment:
-      ORACLE_PWD: oracle123
+      ORACLE_PASSWORD: oracle123
       ORACLE_CHARACTERSET: AL32UTF8
     ports:
       - "1523:1521"
       - "5502:5500"
+    volumes:
+      - ./site2_db/init:/container-entrypoint-initdb.d
+      - site2_oradata:/opt/oracle/oradata    # Persistent storage
     networks:
       - eshop_net
     healthcheck:
-      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/XEPDB1 as sysdba | grep -q 1"]
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
       interval: 30s
       timeout: 10s
       retries: 20
@@ -60,3 +69,9 @@ services:
 networks:
   eshop_net:
     driver: bridge
+
+# Declaring the named volumes for Docker to manage
+volumes:
+  global_oradata:
+  site1_oradata:
+  site2_oradata:

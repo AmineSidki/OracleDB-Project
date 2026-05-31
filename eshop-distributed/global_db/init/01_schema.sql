@@ -1,3 +1,6 @@
+-- Changed from XEPDB1 to FREEPDB1 to match Oracle 23ai Free defaults
+ALTER SESSION SET CONTAINER = FREEPDB1;
+
 CREATE USER eshop IDENTIFIED BY eshop123 DEFAULT TABLESPACE USERS QUOTA UNLIMITED ON USERS;
 GRANT CONNECT, RESOURCE TO eshop;
 ALTER SESSION SET CURRENT_SCHEMA = eshop;
@@ -35,7 +38,7 @@ CREATE TABLE Employes (
 CREATE TABLE Commandes (
     idcommande      NUMBER      PRIMARY KEY,
     idclient        NUMBER      NOT NULL,
-    idemploye       NUMBER,
+    idemploye       NUMBER      ,
     datecommande    DATE        DEFAULT SYSDATE,
     CONSTRAINT fk_commandes_client  FOREIGN KEY (idclient)  REFERENCES Clients(idclient),
     CONSTRAINT fk_commandes_employe FOREIGN KEY (idemploye) REFERENCES Employes(idemploye)
