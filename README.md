@@ -8,7 +8,7 @@ Mise en place d'une base de données Oracle distribuée émulant deux sites dist
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Oracle SQL Developer](https://www.oracle.com/database/sqldeveloper/)
-- Git
+- [Git](https://git-scm.com/)
 
 
 
