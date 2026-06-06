@@ -1,0 +1,7 @@
+-- ============================================================
+-- TRIGGERS DE SYNCHRONISATION — SCENARIO 1
+-- Fragmentation par idCategorie :
+--   Site1 : idCategorie = 50 AND quantite > 100
+--   Site2 : idCategorie = 35 AND quantite > 50
+-- ============================================================
+-- À implémenter

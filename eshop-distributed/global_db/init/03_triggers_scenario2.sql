@@ -1,0 +1,7 @@
+-- ============================================================
+-- TRIGGERS DE SYNCHRONISATION — SCENARIO 2
+-- Fragmentation par volume :
+--   Site1 : quantite >= 100  (gros volumes)
+--   Site2 : quantite <  100  (petits volumes)
+-- ============================================================
+-- À implémenter
