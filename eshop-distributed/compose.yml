@@ -3,6 +3,8 @@ services:
   global_db:
     build:
       context: ./global_db
+      args:
+        SCENARIO: ${SCENARIO:-2}   # override with: SCENARIO=1 docker compose up --build
     container_name: eshop_global_db
     environment:
       ORACLE_PASSWORD: oracle123
@@ -11,8 +13,8 @@ services:
       - "1521:1521"
       - "5500:5500"
     volumes:
-      - ./global_db/init:/container-entrypoint-initdb.d
       - global_oradata:/opt/oracle/oradata   # Persistent storage
+      # init scripts are baked into the image at build time (see global_db/Dockerfile)
     networks:
       - eshop_net
     healthcheck:
