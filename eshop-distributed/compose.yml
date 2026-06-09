@@ -1,29 +1,5 @@
 services:
 
-  global_db:
-    build:
-      context: ./global_db
-      args:
-        SCENARIO: ${SCENARIO:-2}   # override with: SCENARIO=1 docker compose up --build
-    container_name: eshop_global_db
-    environment:
-      ORACLE_PASSWORD: oracle123
-      ORACLE_CHARACTERSET: AL32UTF8
-    ports:
-      - "1521:1521"
-      - "5500:5500"
-    volumes:
-      - global_oradata:/opt/oracle/oradata   # Persistent storage
-      # init scripts are baked into the image at build time (see global_db/Dockerfile)
-    networks:
-      - eshop_net
-    healthcheck:
-      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 20
-      start_period: 60s
-
   site1_db:
     build:
       context: ./site1_db
@@ -36,7 +12,7 @@ services:
       - "5501:5500"
     volumes:
       - ./site1_db/init:/container-entrypoint-initdb.d
-      - site1_oradata:/opt/oracle/oradata    # Persistent storage
+      - site1_oradata:/opt/oracle/oradata
     networks:
       - eshop_net
     healthcheck:
@@ -44,7 +20,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 20
-      start_period: 60s
+      start_period: 180s
 
   site2_db:
     build:
@@ -58,7 +34,7 @@ services:
       - "5502:5500"
     volumes:
       - ./site2_db/init:/container-entrypoint-initdb.d
-      - site2_oradata:/opt/oracle/oradata    # Persistent storage
+      - site2_oradata:/opt/oracle/oradata
     networks:
       - eshop_net
     healthcheck:
@@ -66,13 +42,41 @@ services:
       interval: 30s
       timeout: 10s
       retries: 20
-      start_period: 60s
+      start_period: 180s
+
+  global_db:
+    build:
+      context: ./global_db
+      args:
+        SCENARIO: ${SCENARIO:-2}   # override with: SCENARIO=1 docker compose up --build
+    container_name: eshop_global_db
+    depends_on:
+      site1_db:
+        condition: service_healthy
+      site2_db:
+        condition: service_healthy
+    environment:
+      ORACLE_PASSWORD: oracle123
+      ORACLE_CHARACTERSET: AL32UTF8
+    ports:
+      - "1521:1521"
+      - "5500:5500"
+    volumes:
+      - global_oradata:/opt/oracle/oradata
+      - ./tests:/tests
+    networks:
+      - eshop_net
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'SELECT 1 FROM DUAL;' | sqlplus -s sys/oracle123@localhost:1521/FREEPDB1 as sysdba | grep -q 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
 
 networks:
   eshop_net:
     driver: bridge
 
-# Declaring the named volumes for Docker to manage
 volumes:
   global_oradata:
   site1_oradata:
